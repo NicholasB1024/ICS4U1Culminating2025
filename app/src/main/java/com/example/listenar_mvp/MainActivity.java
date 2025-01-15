@@ -19,11 +19,10 @@ import java.util.*;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button startButton, pauseButton, stopButton, prevButton, nextButton;    //creating button objects
-    MediaPlayer mediaPlayer;                        //creating media player object
+    Button startButton, pauseButton, stopButton, prevButton, nextButton, switchPlaylistButton;
+    MediaPlayer mediaPlayer;
     final Field[] allSongs = R.raw.class.getDeclaredFields();
-    int songPosition = 0;
-    ArrayList<Integer> currentQueue;
+    Playlist currentQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,18 +38,26 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //initializing buttons using buttons created in the XML file
-        startButton = findViewById(R.id.play);
+        startButton = findViewById(R.id.start);
         pauseButton = findViewById(R.id.pause);
         stopButton = findViewById(R.id.stop);
         prevButton = findViewById(R.id.previous);
         nextButton = findViewById(R.id.next);
+        switchPlaylistButton = findViewById(R.id.switchPlaylist);
 
-        ArrayList<Integer> testQueue = new ArrayList<>();
+        //test playlists
+        Playlist p1 = new Playlist();
+        Playlist p2 = new Playlist();
         try {
 
-            for (Field song : allSongs) {
+            for (int i = 0; i < allSongs.length / 2; i++) {
 
-                testQueue.add(song.getInt(song));
+                p1.addSong(allSongs[i].getInt(allSongs[i]));
+
+            }
+            for (int i = allSongs.length / 2; i < allSongs.length; i++) {
+
+                p2.addSong(allSongs[i].getInt(allSongs[i]));
 
             }
 
@@ -60,15 +67,17 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        currentQueue = testQueue;
+        currentQueue = p1;
 
+        //UI object listeners
+        //starts the media player, or resumes it if it's paused
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if (mediaPlayer == null){
 
-                    playSong(songPosition);
+                    playSong();
 
                 }
                 else {
@@ -79,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        //pauses the media player
+        //TODO: make pausing/resuming be done with one button
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        //stops the media player
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,23 +125,23 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        //plays the previous song when pressed, if there is one
         prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if (mediaPlayer != null) {
 
-                    if (songPosition - 1 >= 0){
+                    if (currentQueue.getSongPosition() - 1 >= 0){
 
                         stopPlaying();
-                        songPosition--;
-                        playSong(songPosition);
+                        currentQueue.setSongPosition(currentQueue.getSongPosition() - 1);
+                        playSong();
 
                     }
                     else{
 
                         Toast.makeText(getApplicationContext(), "Cannot Go Back Further", Toast.LENGTH_SHORT).show();
-                        Log.d("Current Song Information", "Song Position: " + songPosition);
 
                     }
 
@@ -142,23 +154,23 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        //plays the next song when pressed, if there is one
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if (mediaPlayer != null) {
 
-                    if (songPosition + 1 < currentQueue.size()) {
+                    if (currentQueue.getSongPosition() + 1 < currentQueue.getPlaylistSize()) {
 
                         stopPlaying();
-                        songPosition++;
-                        playSong(songPosition);
+                        currentQueue.setSongPosition(currentQueue.getSongPosition() + 1);
+                        playSong();
 
                     }
                     else{
 
                         Toast.makeText(getApplicationContext(), "Nothing Next In Queue", Toast.LENGTH_SHORT).show();
-                        Log.d("Current Song Information", "Song Position: " + songPosition);
 
                     }
 
@@ -168,6 +180,32 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Nothing Currently Playing", Toast.LENGTH_SHORT).show();
 
                 }
+
+            }
+        });
+        switchPlaylistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //TODO: make this more widely applicable later
+                if (currentQueue == p1){
+
+                    currentQueue = p2;
+
+                }
+                else{
+
+                    currentQueue = p1;
+
+                }
+                currentQueue.setSongPosition(0);
+                if (mediaPlayer != null) {
+
+                    stopPlaying();
+                    playSong();
+
+                }
+
 
             }
         });
@@ -175,18 +213,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //plays a song by creating a new instance of the mediaplayer
-    public void playSong(int position){
+    public void playSong(){
 
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), currentQueue.get(position));
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), currentQueue.getSong(currentQueue.getSongPosition()));
         mediaPlayer.start();
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
 
-                if (songPosition < currentQueue.size()) {
+                if (currentQueue.getSongPosition() < currentQueue.getPlaylistSize()) {
 
-                    songPosition++;
-                    playSong(songPosition);
+                    currentQueue.setSongPosition(currentQueue.getSongPosition() + 1);
+                    playSong();
 
                 }
                 else{
@@ -200,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //method to stop the media player
     public void stopPlaying(){
 
         mediaPlayer.release();

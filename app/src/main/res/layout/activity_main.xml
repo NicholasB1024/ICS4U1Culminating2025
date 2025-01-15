@@ -10,9 +10,22 @@
     android:visibility="visible"
     tools:context=".MainActivity">
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/switchPlaylist"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Switch Playlist" />
+    </LinearLayout>
+
     <Button
-        android:id="@+id/play"
-        android:text="Play"
+        android:id="@+id/start"
+        android:text="Start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
