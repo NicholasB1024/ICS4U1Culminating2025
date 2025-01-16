@@ -20,6 +20,7 @@ import java.util.*;
 public class MainActivity extends AppCompatActivity {
 
     Button startButton, pauseButton, stopButton, prevButton, nextButton, switchPlaylistButton;
+    TextView currentPlaylistText, currentSongText;
     MediaPlayer mediaPlayer;
     final Field[] allSongs = R.raw.class.getDeclaredFields();
     Playlist currentQueue;
@@ -45,9 +46,32 @@ public class MainActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.next);
         switchPlaylistButton = findViewById(R.id.switchPlaylist);
 
+        //initializing text view objects
+        currentPlaylistText = findViewById(R.id.currentPlaylistName);
+        currentPlaylistText.setText("");
+
+        //temporary stuff
+        ArrayList<Integer> rawIDs = new ArrayList<>();
+        for (int i = 0; i < allSongs.length; i++){
+
+            try {
+
+                rawIDs.add(allSongs[i].getInt(allSongs[i]));
+
+            } catch (IllegalAccessException e) {
+
+                throw new RuntimeException(e);
+
+            }
+
+        }
+        Log.d("raw file IDs", rawIDs.toString());
+
+        //[2131951624, 2131951625, 2131951617, 2131951616, 2131951618, 2131951626, 2131951619, 2131951627, 2131951620, 2131951621, 2131951622, 2131951623, 2131951628]
+
         //test playlists
-        Playlist p1 = new Playlist();
-        Playlist p2 = new Playlist();
+        Playlist p1 = new Playlist("test1");
+        Playlist p2 = new Playlist("test2");
         try {
 
             for (int i = 0; i < allSongs.length / 2; i++) {
@@ -82,21 +106,29 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else {
 
-                    mediaPlayer.start();
+                    Toast.makeText(getApplicationContext(), "Player Already Active", Toast.LENGTH_SHORT).show();
 
                 }
 
             }
         });
-        //pauses the media player
-        //TODO: make pausing/resuming be done with one button
+        //pauses/resumes the media player
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if (mediaPlayer != null) {
 
-                    mediaPlayer.pause();
+                    if (mediaPlayer.isPlaying()){
+
+                        mediaPlayer.pause();
+
+                    }
+                    else{
+
+                        mediaPlayer.start();
+
+                    }
 
                 }
                 else {
@@ -183,11 +215,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        //this will eventually be removed and replaced with a proper playlist selection system
         switchPlaylistButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                //TODO: make this more widely applicable later
                 if (currentQueue == p1){
 
                     currentQueue = p2;
@@ -199,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 currentQueue.setSongPosition(0);
+                currentPlaylistText.setText(currentQueue.getName());
                 if (mediaPlayer != null) {
 
                     stopPlaying();
@@ -217,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
 
         mediaPlayer = MediaPlayer.create(getApplicationContext(), currentQueue.getSong(currentQueue.getSongPosition()));
         mediaPlayer.start();
+        currentPlaylistText.setText(currentQueue.getName());
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -243,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
 
         mediaPlayer.release();
         mediaPlayer = null;
+        currentPlaylistText.setText("");
 
     }
 
