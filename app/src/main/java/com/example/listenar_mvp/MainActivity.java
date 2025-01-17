@@ -301,7 +301,6 @@ public class MainActivity extends AppCompatActivity {
     //updates and displays information about the current song
     public void updateSongInfo(){
 
-        //TODO: fix the null pointer exception
         int curSongID = currentQueue.getSong(currentQueue.getSongPosition());
         for (int i = 0; i < allSongInfo.size(); i++){
 
