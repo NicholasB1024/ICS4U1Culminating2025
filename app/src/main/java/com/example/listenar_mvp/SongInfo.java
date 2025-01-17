@@ -4,8 +4,9 @@ import java.util.*;
 
 public class SongInfo {
 
+    private int ID;
     private String name;
-    private String length;
+    private int length;
     private String artist;
     private final int[] allSongIDs = {
             2131951624,
@@ -37,26 +38,81 @@ public class SongInfo {
             "Toxic",
             "Video Killed the Radio Star"
     };
-    private final String[] allSongLengths = {
-            "3:35",
-            "3:51",
-            "10:11",
-            "4:27",
-            "4:59",
-            "2:20",
-            "3:25",
-            "6:37",
-            "2:00",
-            "3:52",
-            "2:52",
-            "2:47",
-            "4:14"
+    private final int[] allSongLengths = {
+            215,
+            231,
+            611,
+            267,
+            299,
+            140,
+            205,
+            397,
+            120,
+            232,
+            172,
+            167,
+            252
     };
     private final String[] allSongArtists = {
-
+            "Elvis Presly, JXL",
+            "DJ Quicksilver",
+            "Blade Techno",
+            "Blade Trinity Soundtrack",
+            "Blade Trinity Soundtrack",
+            "Elastica",
+            "ABBA",
+            "Brian Setzer Orchestra",
+            "Blur",
+            "Bee Gees",
+            "Archies",
+            "Crazytown",
+            "The Buggels"
     };
 
     public SongInfo(int songID){
+
+        for (int i = 0; i < allSongIDs.length; i++){
+
+            if (songID == allSongIDs[i]){
+
+                this.ID = allSongIDs[i];
+                this.name = allSongNames[i];
+                this.length = allSongLengths[i];
+                this.artist = allSongArtists[i];
+                break;
+
+            }
+
+        }
+
+    }
+
+    //accessors
+    public int getID(){
+        return this.ID;
+    }
+
+    public String getName(){
+
+        return this.name;
+
+    }
+
+    public int getLength(){
+
+        return this.length;
+
+    }
+
+    public String getFormattedLength(){
+
+        return this.length / 60 + ":" + this.length % 60;
+
+    }
+
+    public String getArtist(){
+
+        return this.artist;
 
     }
 

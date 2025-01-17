@@ -23,7 +23,9 @@ public class MainActivity extends AppCompatActivity {
     TextView currentPlaylistText, currentSongText;
     MediaPlayer mediaPlayer;
     final Field[] allSongs = R.raw.class.getDeclaredFields();
+    final ArrayList<SongInfo> allSongInfo = new ArrayList<>();
     Playlist currentQueue;
+    SongInfo currentSong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +51,16 @@ public class MainActivity extends AppCompatActivity {
         //initializing text view objects
         currentPlaylistText = findViewById(R.id.currentPlaylistName);
         currentPlaylistText.setText("");
+        currentSongText = findViewById(R.id.currentSongName);
+        currentSongText.setText("");
 
         //temporary stuff
         ArrayList<Integer> rawIDs = new ArrayList<>();
-        for (int i = 0; i < allSongs.length; i++){
+        for (Field song : allSongs) {
 
             try {
 
-                rawIDs.add(allSongs[i].getInt(allSongs[i]));
+                rawIDs.add(song.getInt(song));
 
             } catch (IllegalAccessException e) {
 
@@ -65,9 +69,22 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-        Log.d("raw file IDs", rawIDs.toString());
 
-        //[2131951624, 2131951625, 2131951617, 2131951616, 2131951618, 2131951626, 2131951619, 2131951627, 2131951620, 2131951621, 2131951622, 2131951623, 2131951628]
+        for (Field song : allSongs) {
+
+            SongInfo s;
+            try {
+
+                s = new SongInfo(song.getInt(song));
+
+            } catch (IllegalAccessException e) {
+
+                throw new RuntimeException(e);
+
+            }
+            allSongInfo.add(s);
+
+        }
 
         //test playlists
         Playlist p1 = new Playlist("test1");
@@ -231,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 currentQueue.setSongPosition(0);
-                currentPlaylistText.setText(currentQueue.getName());
+                updateSongInfo();
                 if (mediaPlayer != null) {
 
                     stopPlaying();
@@ -250,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
 
         mediaPlayer = MediaPlayer.create(getApplicationContext(), currentQueue.getSong(currentQueue.getSongPosition()));
         mediaPlayer.start();
-        currentPlaylistText.setText(currentQueue.getName());
+        updateSongInfo();
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -278,6 +295,27 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.release();
         mediaPlayer = null;
         currentPlaylistText.setText("");
+
+    }
+
+    //updates and displays information about the current song
+    public void updateSongInfo(){
+
+        //TODO: fix the null pointer exception
+        int curSongID = currentQueue.getSong(currentQueue.getSongPosition());
+        for (int i = 0; i < allSongInfo.size(); i++){
+
+            if (curSongID == allSongInfo.get(i).getID()){
+
+                currentSong = allSongInfo.get(i);
+                break;
+
+            }
+
+        }
+
+        currentPlaylistText.setText(currentQueue.getName());
+        currentSongText.setText(currentSong.getName());
 
     }
 
