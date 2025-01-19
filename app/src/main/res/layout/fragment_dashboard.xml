@@ -6,13 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".ui.dashboard.DashboardFragment">
 
-
+    <Button
+        android:id="@+id/makePlaylist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Playlist"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Space
         android:id="@+id/space"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/makePlaylist"
         tools:layout_editor_absoluteX="200dp" />
 
     <TextView

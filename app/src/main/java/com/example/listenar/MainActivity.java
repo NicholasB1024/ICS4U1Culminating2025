@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button startButton, pauseButton, stopButton, prevButton, nextButton, switchPlaylistButton, createPlaylistButton;
+    Button startButton, pauseButton, stopButton, prevButton, nextButton, switchPlaylistButton;
     TextView currentPlaylistText, currentSongText;
     EditText enterPlaylistName;
     MediaPlayer mediaPlayer;
@@ -64,9 +64,6 @@ public class MainActivity extends AppCompatActivity {
         prevButton = findViewById(R.id.previous);
         nextButton = findViewById(R.id.next);
         switchPlaylistButton = findViewById(R.id.switchPlaylist);
-        createPlaylistButton = findViewById(R.id.makePlaylist);
-        Log.d("cpb info", String.valueOf(R.id.makePlaylist));
-        Log.d("cpb id", String.valueOf(R.id.makePlaylist));
 
         //initializing text view objects
         currentPlaylistText = findViewById(R.id.currentPlaylistName);
@@ -92,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-        Log.d("song res IDs", rawIDs.toString());
 
+        //creates SongInfo objects for all songs
         for (Field song : allSongs) {
 
             SongInfo s;
@@ -286,19 +283,6 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-
-            }
-        });
-        createPlaylistButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String name;
-
-                enterPlaylistName.setVisibility(VISIBLE);
-                name = String.valueOf(enterPlaylistName.getText());
-
-                Playlist p = new Playlist(name);
 
             }
         });
