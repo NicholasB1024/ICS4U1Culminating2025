@@ -28,8 +28,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button startButton, pauseButton, stopButton, prevButton, nextButton, switchPlaylistButton;
-    TextView currentPlaylistText, currentSongText;
+    Button startButton, pauseButton, stopButton, prevButton, nextButton, switchPlaylistButton, sortNamesButton, sortArtistButton;
+    TextView currentPlaylistText, currentSongText, currentLengthText, currentArtistText, songListText;
     EditText enterPlaylistName;
     MediaPlayer mediaPlayer;
     final Field[] allSongs = R.raw.class.getDeclaredFields();
@@ -64,31 +64,19 @@ public class MainActivity extends AppCompatActivity {
         prevButton = findViewById(R.id.previous);
         nextButton = findViewById(R.id.next);
         switchPlaylistButton = findViewById(R.id.switchPlaylist);
+        sortNamesButton = findViewById(R.id.sortNames);
+        sortArtistButton = findViewById(R.id.sortArtists);
 
         //initializing text view objects
         currentPlaylistText = findViewById(R.id.currentPlaylistName);
         currentPlaylistText.setText("");
         currentSongText = findViewById(R.id.currentSongName);
         currentSongText.setText("");
-
-        //initalizing edit text options
-        enterPlaylistName = findViewById(R.id.enterPlaylistName);
-
-        //temporary stuff
-        ArrayList<Integer> rawIDs = new ArrayList<>();
-        for (Field song : allSongs) {
-
-            try {
-
-                rawIDs.add(song.getInt(song));
-
-            } catch (IllegalAccessException e) {
-
-                throw new RuntimeException(e);
-
-            }
-
-        }
+        currentLengthText = findViewById(R.id.currentLengthName);
+        currentLengthText.setText("");
+        currentArtistText = findViewById(R.id.currentArtistName);
+        currentArtistText.setText("");
+        songListText = findViewById(R.id.songList);
 
         //creates SongInfo objects for all songs
         for (Field song : allSongs) {
@@ -107,32 +95,86 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        sortAllSongs("name");
+
         //test playlists
         p1 = new Playlist("test1");
         p2 = new Playlist("test2");
-        try {
 
-            for (int i = 0; i < allSongs.length / 2; i++) {
+        for (int i = 0; i < allSongInfo.size() / 2; i++) {
 
-                p1.addSong(allSongs[i].getInt(allSongs[i]));
+            p1.addSong(allSongInfo.get(i).getID());
 
-            }
-            for (int i = allSongs.length / 2; i < allSongs.length; i++) {
+        }
+        for (int i = allSongInfo.size() / 2; i < allSongInfo.size(); i++) {
 
-                p2.addSong(allSongs[i].getInt(allSongs[i]));
-
-            }
-
-        } catch (IllegalAccessException e) {
-
-            throw new RuntimeException(e);
+            p2.addSong(allSongInfo.get(i).getID());
 
         }
 
         currentQueue = p1;
 
+        updateSongList();
+
         //UI object listeners
         setupButtons();
+
+    }
+
+    //sorting all songs alphabetically by a given property using insertion sort
+    public void sortAllSongs(String property){
+
+        switch (property){
+            case "name":
+
+                for (int i = 1; i < allSongInfo.size(); i++) {
+
+                    SongInfo key = allSongInfo.get(i);
+                    int j = i - 1;
+                    while(j >= 0 && key.getName().compareTo(allSongInfo.get(j).getName()) < 0){
+
+                        allSongInfo.set(j + 1, allSongInfo.get(j));
+                        j--;
+
+                    }
+                    allSongInfo.set(j + 1, key);
+
+                }
+                break;
+            case "artist":
+
+                for (int i = 1; i < allSongInfo.size(); i++) {
+
+                    SongInfo key = allSongInfo.get(i);
+                    int j = i - 1;
+                    while(j >= 0 && key.getArtist().compareTo(allSongInfo.get(j).getArtist()) < 0){
+
+                        allSongInfo.set(j + 1, allSongInfo.get(j));
+                        j--;
+
+                    }
+                    allSongInfo.set(j + 1, key);
+
+                }
+                break;
+        }
+
+        updateSongList();
+
+    }
+
+    public void updateSongList(){
+
+        String songList = "";
+
+        for (int i = 0; i < allSongInfo.size(); i++) {
+
+            songList = String.join("", songList, allSongInfo.get(i).getArtist(), " - ", allSongInfo.get(i).getName(), " \n");
+
+
+        }
+
+        songListText.setText(songList);
 
     }
 
@@ -286,6 +328,22 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        sortNamesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                sortAllSongs("name");
+
+            }
+        });
+        sortArtistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                sortAllSongs("artist");
+
+            }
+        });
 
     }
 
@@ -323,6 +381,8 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer = null;
         currentPlaylistText.setText("");
         currentSongText.setText("");
+        currentLengthText.setText("");
+        currentArtistText.setText("");
 
     }
 
@@ -343,6 +403,8 @@ public class MainActivity extends AppCompatActivity {
 
         currentPlaylistText.setText(currentQueue.getName());
         currentSongText.setText(currentSong.getName());
+        currentLengthText.setText(currentSong.getFormattedLength());
+        currentArtistText.setText(currentSong.getArtist());
 
     }
 

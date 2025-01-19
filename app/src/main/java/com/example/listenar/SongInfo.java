@@ -1,5 +1,7 @@
 package com.example.listenar;
 
+import java.util.Objects;
+
 public class SongInfo {
 
     private int ID;
@@ -104,7 +106,9 @@ public class SongInfo {
 
     public String getFormattedLength(){
 
-        return this.length / 60 + ":" + this.length % 60;
+        String beforeColon = String.valueOf(this.length / 60);
+        String afterColon = String.valueOf(this.length % 60);
+        return (Objects.equals(afterColon, "0")) ? beforeColon + ":" + afterColon + "0" : beforeColon + ":" + afterColon;
 
     }
 
