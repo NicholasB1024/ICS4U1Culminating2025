@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.listenar.MainActivity;
 import com.example.listenar.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
@@ -24,6 +25,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         return root;
+
     }
 
     @Override

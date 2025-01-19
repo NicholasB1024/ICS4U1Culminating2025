@@ -1,16 +1,21 @@
 package com.example.listenar;
 
+import static android.view.View.VISIBLE;
+
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -23,13 +28,15 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button startButton, pauseButton, stopButton, prevButton, nextButton, switchPlaylistButton;
+    Button startButton, pauseButton, stopButton, prevButton, nextButton, switchPlaylistButton, createPlaylistButton;
     TextView currentPlaylistText, currentSongText;
+    EditText enterPlaylistName;
     MediaPlayer mediaPlayer;
     final Field[] allSongs = R.raw.class.getDeclaredFields();
     final ArrayList<SongInfo> allSongInfo = new ArrayList<>();
     Playlist currentQueue;
     SongInfo currentSong;
+    Playlist p1, p2;
 
     private ActivityMainBinding binding;
 
@@ -57,12 +64,18 @@ public class MainActivity extends AppCompatActivity {
         prevButton = findViewById(R.id.previous);
         nextButton = findViewById(R.id.next);
         switchPlaylistButton = findViewById(R.id.switchPlaylist);
+        createPlaylistButton = findViewById(R.id.makePlaylist);
+        Log.d("cpb info", String.valueOf(R.id.makePlaylist));
+        Log.d("cpb id", String.valueOf(R.id.makePlaylist));
 
         //initializing text view objects
         currentPlaylistText = findViewById(R.id.currentPlaylistName);
         currentPlaylistText.setText("");
         currentSongText = findViewById(R.id.currentSongName);
         currentSongText.setText("");
+
+        //initalizing edit text options
+        enterPlaylistName = findViewById(R.id.enterPlaylistName);
 
         //temporary stuff
         ArrayList<Integer> rawIDs = new ArrayList<>();
@@ -98,8 +111,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //test playlists
-        Playlist p1 = new Playlist("test1");
-        Playlist p2 = new Playlist("test2");
+        p1 = new Playlist("test1");
+        p2 = new Playlist("test2");
         try {
 
             for (int i = 0; i < allSongs.length / 2; i++) {
@@ -122,7 +135,13 @@ public class MainActivity extends AppCompatActivity {
         currentQueue = p1;
 
         //UI object listeners
-        //starts the media player, or resumes it if it's paused
+        setupButtons();
+
+    }
+
+    public void setupButtons(){
+
+        //starts the media player
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,6 +286,19 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
+
+            }
+        });
+        createPlaylistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String name;
+
+                enterPlaylistName.setVisibility(VISIBLE);
+                name = String.valueOf(enterPlaylistName.getText());
+
+                Playlist p = new Playlist(name);
 
             }
         });
